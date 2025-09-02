@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .search button {
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .current {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+    <div class="search">
+      <input type="text" id="cityInput" placeholder="Enter city (e.g., Mumbai)" />
+      <button onclick="getWeather()">Search</button>
+      <button onclick="getLocationWeather()">📍</button>
+    </div>
+    <div id="error" style="color:red;"></div>
+    <div id="weather"></div>
+    <footer>Powered by WeatherAPI · Demo only</footer>
+  </div>
+
+  <script>
+    const API_KEY = "b3112909d21e4c5198c154553250209"; // Provided by user
+    const BASE_URL = "http://api.weatherapi.com/v1/current.json";
+
+    async function getWeather(city) {
+      const input = document.getElementById("cityInput").value || city;
+      if (!input) return;
+      document.getElementById("error").textContent = "";
+      try {
+        const res = await fetch(`${BASE_URL}?key=${API_KEY}&q=${encodeURIComponent(input)}&aqi=yes`);
+        if (!res.ok) throw new Error("City not found");
+        const data = await res.json();
+        displayWeather(data);
+      } catch (e) {
+        document.getElementById("error").textContent = e.message;
+        document.getElementById("weather").innerHTML = "";
+      }
+    }
+
+    function getLocationWeather() {
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(`${BASE_URL}?key=${API_KEY}&q=${latitude},${longitude}&aqi=yes`);
+          if (!res.ok) throw new Error("Location weather not found");
+          const data = await res.json();
+          displayWeather(data);
+        } catch (e) {
+          document.getElementById("error").textContent = e.message;
+        }
+      });
+    }
+
+    function displayWeather(data) {
+      const weatherDiv = document.getElementById("weather");
+      weatherDiv.innerHTML = `
+        <div class="card current">
+          <img src="https:${data.current.condition.icon}" alt="icon">
+          <div>
+            <h2>${data.location.name}, ${data.location.country}</h2>
+            <div><strong>${data.current.temp_c}°C</strong> — ${data.current.condition.text}</div>
+            <div>Feels like: ${data.current.feelslike_c}°C</div>
+            <div>Humidity: ${data.current.humidity}%</div>
+            <div>Wind: ${data.current.wind_kph} kph</div>
+            <div>Air Quality Index: ${data.current.air_quality["us-epa-index"]}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Load default city
+    getWeather("London");
+  </script>
+</body>
+</html>
