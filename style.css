@@ -1,0 +1,43 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header Styles */
+header {
+    background-color: #3b4cca;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Main Content */
+main {
+    text-align: center;
+    margin-top: 50px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3b4cca;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2a3d8f;
+}
+
+/* Result Section */
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    display: none;
+}
